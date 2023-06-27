@@ -78,7 +78,6 @@ export default function App() {
         playerTurn: 1,
       });
     } else {
-      console.log(socketData);
       if (socketData.isGameFinished) {
         setPlayerGrid(socketData.toGrid);
         setIsGameFinished(true);
