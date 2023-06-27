@@ -1,4 +1,4 @@
-FROM node:12
+FROM node
 RUN apt update && apt install nginx -y
 WORKDIR /battleship-app
 COPY package.json ./
