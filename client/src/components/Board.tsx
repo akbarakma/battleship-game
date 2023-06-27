@@ -53,10 +53,8 @@ export default function Board({
     if (playerTurn === playerNumber) {
       setSelectedId(id);
       const updatedGrid = [...opponentGrid];
-      if (updatedGrid[id].color !== 'white') {
-        updatedGrid[id] = { ...updatedGrid[id], color: 'blue' };
-        setTempOpponentGrid(updatedGrid);
-      }
+      updatedGrid[id] = { ...updatedGrid[id], color: 'blue' };
+      setTempOpponentGrid(updatedGrid);
     }
   };
 
