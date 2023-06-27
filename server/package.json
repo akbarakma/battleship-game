@@ -9,7 +9,7 @@
     "dev": "NODE_ENV=development concurrently \"npm:build:dev\" \"npm:start:dev\"",
     "dev:prod": "NODE_ENV=production concurrently \"npm:build:dev\" \"npm:start:dev\"",
     "build": "tsc",
-    "start": "NODE_ENV=production npx nodemon dist/index.js",
+    "start": "NODE_ENV=production npx node dist/index.js",
     "deploy": "tsc && bash ./script/deploy_server.sh"
   },
   "keywords": [],
