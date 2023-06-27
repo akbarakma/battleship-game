@@ -44,4 +44,10 @@ interface ISocketData {
   to: string;
   gameConnected?: boolean;
   playerTurn?: number;
+  playerNumber?: number;
+  gameStarted?: boolean;
+  fromGrid?: any;
+  toGrid?: any;
+  isGameFinished?: boolean;
+  playerWon?: number;
 }

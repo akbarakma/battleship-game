@@ -1,80 +1,210 @@
 import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import './Board.css';
 import { socket } from '../socket';
-import { Table } from 'react-bootstrap';
-import { getRandomArbitrary } from '../helpers/getRandomNumber';
 
-export function Board({ opponent, playerNumber }: IBoard) {
-  const [boardArr, setBoardArr] = useState<IBoardArr[][]>([]);
-  const [playerTurn, setPlayerTurn] = useState(1);
-  const [shipLengthArr, setShipLengthArr] = useState([5,4,3,2]);
+type Cell = {
+  id: number;
+  color: string;
+  status: string
+};
 
-  useEffect(() => {
-    const tempArr: any = [[]];
-    for (let i = 0; i < 10; i++) {
-      const temp = [];
-      for (let j = 0; j < 10; j++) {
-        temp.push({
-          cordinate: `${i}-${j}`,
-          isYourShip: false,
-          status: '-',
-        });
-      }
-      tempArr.push(temp);
-    }
-    setBoardArr(tempArr);
-  }, []);
-
-  useEffect(() => {
-    setBoard();
-  }, [boardArr]);
-
-  const setBoard = () => {
-    return <Table bordered size='sm'>
-    <tbody>
-      {
-        boardArr.map((data, index) => {
-          return (
-            <tr key={index}>
-              {data.map((data2: IBoardArr, index) => {
-                return (
-                  <td
-                    style={data2.status === 'x' ? {backgroundColor: 'black'} : {}}
-                    key={index}
-                    onClick={() => {
-                      const splitted = data2.cordinate.split('-');
-                      const tempBoardArr: IBoardArr[][] = JSON.parse(JSON.stringify(boardArr));
-                      tempBoardArr[Number(splitted[0])+1][Number(splitted[1])].status = 'x';
-                      setBoardArr(tempBoardArr);
-                    }}>{data2.cordinate}
-                  </td>
-                )
-              })}
-            </tr>
-          )
-        })
-      }
-    </tbody>
-  </Table>
-  }
-  return (
-    <div>
-      <h1>Player Number: {playerNumber}</h1>
-      <h1>Playing Againts Player: {opponent}</h1>
-      <h1>{ playerTurn === playerNumber ? 'Your Turn' : 'Waiting for the opponent Turn' }</h1>
-      <div style={{ paddingLeft: 500, paddingRight: 500 }}>
-        { setBoard() }
-      </div>
-    </div>
-  );
-}
+const ROWS = 10;
+const COLS = 10;
 
 interface IBoard {
-  opponent: string;
+  opponentCode: string;
+  playerGrid: Cell[];
+  opponentGrid: Cell[];
+  setOpponentGrid: any;
+  playerTurn: number;
+  setPlayerTurn: any;
   playerNumber: number | null | undefined;
+  randomCode: string;
+  status: string;
+  setStatus: any;
+  setIsGameFinished: any;
+  isGameFinished: boolean;
 }
 
-interface IBoardArr {
-  cordinate: string;
-  isYourShip: boolean;
-  status: string;
-}
+export default function Board({
+  opponentCode,
+  playerGrid,
+  opponentGrid,
+  setOpponentGrid,
+  playerTurn,
+  setPlayerTurn,
+  playerNumber,
+  randomCode,
+  status,
+  setStatus,
+  setIsGameFinished,
+  isGameFinished,
+}: IBoard) {
+  const [selectedId, setSelectedId] = useState(-1);
+  const [tempOpponentGrid, setTempOpponentGrid] = useState<Cell[]>([]);
+
+  useEffect(() => {
+    const newGrid = [...opponentGrid];
+    setTempOpponentGrid(newGrid);
+  }, [opponentGrid]);
+
+  const handleClick = (id: number) => {
+    if (playerTurn === playerNumber) {
+      setSelectedId(id);
+      const updatedGrid = [...opponentGrid];
+      updatedGrid[id] = { ...updatedGrid[id], color: 'blue' };
+      setTempOpponentGrid(updatedGrid);
+    }
+  };
+
+  const checkIsOpponentBoardReady = (grid: Cell[]) => {
+    let isReady = false;
+    for (let i = 0; i < grid.length; i++) {
+      if (grid[i].color !== 'white') {
+        isReady = true;
+        break;
+      }
+    }
+    return isReady;
+  }
+
+  const checkIfWin = (grid: Cell[]) => {
+    let isWin = true;
+    grid.map((data) => {
+      if (data.status === 'ship') {
+        isWin = false;
+      }
+    });
+    if (isWin) {
+      socket.emit('connect-code', {
+        to: opponentCode,
+        from: randomCode,
+        playerNumber: playerNumber,
+        playerTurn: 1,
+        toGrid: grid,
+        gameStarted: true,
+        isGameFinished: true,
+        playerWon: playerNumber,
+      });
+      setIsGameFinished(true);
+      setStatus('Congratulation!! You WON!!');
+    }
+    return isWin;
+  }
+
+  const handleAttackButton = () => {
+    if (selectedId >= 0 && opponentGrid[selectedId].status !== 'hit' && opponentGrid[selectedId].status !== 'miss') {
+      if (opponentGrid[selectedId].status === 'ship') {
+        setStatus('HIT');
+        const updatedGrid = [...opponentGrid];
+        updatedGrid[selectedId] = { ...updatedGrid[selectedId], color: 'red', status: 'hit' };
+        setOpponentGrid(updatedGrid);
+        checkIfWin(updatedGrid);
+      } else {
+        setStatus('Select grid to attack');
+        const updatedGrid = [...opponentGrid];
+        updatedGrid[selectedId] = { ...updatedGrid[selectedId], color: 'green', status: 'miss' };
+        setOpponentGrid(updatedGrid);
+        checkIfWin(updatedGrid);
+        const newTurn = playerTurn === 1 ? 2 : 1;
+        setPlayerTurn(newTurn);
+        socket.emit('connect-code', {
+          to: opponentCode,
+          from: randomCode,
+          playerNumber: playerNumber,
+          playerTurn: newTurn,
+          fromGrid: playerGrid,
+          toGrid: updatedGrid,
+          gameStarted: true,
+          gameConnected: true,
+        });
+      }
+      setSelectedId(-1);
+    }
+  }
+
+  return (
+    <div className="App">
+      <h1>Playing Against Player {opponentCode}</h1>
+      <Container>
+        <Row>
+          <Col xs={4}>
+            <h1>Your Board</h1>
+            <div className="grid">
+              {playerGrid.map(cell => (
+                <div
+                  key={cell.id}
+                  className="cell"
+                  style={{ backgroundColor: cell.color }}
+                  onClick={() => handleClick(cell.id)}
+                />
+              ))}
+            </div>
+          </Col>
+          <Col xs={4}>
+            {
+              !checkIsOpponentBoardReady(opponentGrid) ?
+              <>
+                <h1>Waiting for opponent ...</h1>
+              </> :
+              <>
+                <h1>Place Your Target on the Board</h1>
+                <div className="grid">
+                  {tempOpponentGrid.map(cell => (
+                    <div
+                      key={cell.id}
+                      className="cell"
+                      style={{ backgroundColor: cell.color }}
+                      // style={{ backgroundColor: 'white' }}
+                      onClick={() => handleClick(cell.id)}
+                    />
+                  ))}
+                </div>
+              </>
+            }
+            
+            
+          </Col>
+          <Col xs={4}>
+            <h1>Option</h1>
+            {
+              playerNumber === playerTurn ?
+              <>
+                <Button onClick={handleAttackButton}>
+                  Attack
+                </Button>
+              </> :
+              <>
+                <Button disabled={true}>
+                  Waiting for Opponent
+                </Button>
+              </>
+            }
+            <h1>Status: </h1>
+            {
+              (playerNumber === playerTurn) ?
+              <>
+                <h2>{status}</h2>
+              </> :
+              <>
+                {
+                  isGameFinished ? <h2>{status}</h2> : <h2>Waiting for Opponent</h2>
+                }
+              </>
+            }
+          </Col>
+        </Row>
+      </Container>
+    </div>
+  );
+};
+
+// type ShipName = 'Carrier' | 'Battleship' | 'Cruiser' | 'Submarine' | 'Destroyer';
+
+// type IPlayerShip = {
+//   [key in ShipName]: {
+//     label: string,
+//     size: number,
+//   }
+// }

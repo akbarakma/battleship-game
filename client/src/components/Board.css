@@ -1,0 +1,23 @@
+.App {
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  grid-gap: 4px;
+  margin-top: 20px;
+  width: 400px;
+  height: 400px;
+}
+
+.cell {
+  background-color: white;
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+
+.cell:hover {
+  opacity: 0.7;
+}
