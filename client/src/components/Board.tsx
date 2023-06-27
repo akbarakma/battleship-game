@@ -155,7 +155,7 @@ export default function Board({
                     <div
                       key={cell.id}
                       className="cell"
-                      style={{ backgroundColor: cell.status === 'ship' ? 'white' : cell.color }}
+                      style={{ backgroundColor: (cell.status === 'ship' && cell.color !== 'blue') ? 'white' : cell.color }}
                       // style={{ backgroundColor: 'white' }}
                       onClick={() => handleClick(cell.id)}
                     />
