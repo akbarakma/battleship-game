@@ -139,7 +139,6 @@ export default function Board({
                   key={cell.id}
                   className="cell"
                   style={{ backgroundColor: cell.color }}
-                  onClick={() => handleClick(cell.id)}
                 />
               ))}
             </div>
