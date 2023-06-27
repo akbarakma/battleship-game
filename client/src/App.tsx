@@ -155,6 +155,7 @@ export default function App() {
       <div style={{ marginTop: 50 }}>
         <h4>Your Player Code: { randomCode }</h4>
         <h4>Status: { gameConnectedString ? 'Game is Connected': 'Game is Not Connected' }</h4>
+        <p>If the socket connection is not connected, try refreshing the web as the server use free service</p>
       </div>
       <br/>
       
