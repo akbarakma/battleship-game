@@ -1,0 +1,9 @@
+version: '3'
+services:
+  battleship-app:
+    build: .
+    ports:
+      - "4000:4000"
+    volumes:
+      - ".:/battleship-app"
+      - "/battleship-app/node_modules"
