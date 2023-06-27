@@ -13,7 +13,7 @@ export class SocketService {
     const server = http.createServer(app);
     const io = new Server(server, {
       cors: {
-        origin: "https://battleship-game-vert.vercel.app",
+        origin: "https://battleship-game.akbarakma.site",
       },
       path: '/battleship-game/socket.io'
     });
