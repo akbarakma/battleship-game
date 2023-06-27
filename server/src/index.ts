@@ -20,22 +20,21 @@ async function bootstrap(prefix: string) {
   // init socket
   SocketService.initialize(app);
 
-  app.use('/uploads', express.static('uploads'));
-  app.use(cors());
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  // app.use(cors());
+  // app.use(express.json());
+  // app.use(express.urlencoded({ extended: true }));
   
-  app.use(`/${prefix}`, mainRouter);
+  // app.use(`/${prefix}`, mainRouter);
 
-  app.use((req, res) => {
-    res.status(StatusCodes.NOT_FOUND).send('Endpoint Not Found');
-  });
+  // app.use((req, res) => {
+  //   res.status(StatusCodes.NOT_FOUND).send('Endpoint Not Found');
+  // });
 
-  app.use(ErrorHandler.handle);
+  // app.use(ErrorHandler.handle);
   
-  app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}`);
-  });
+  // app.listen(PORT, () => {
+  //   console.log(`Server is listening on port ${PORT}`);
+  // });
 }
 
 bootstrap('');
