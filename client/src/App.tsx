@@ -114,6 +114,7 @@ export default function App() {
 
   return (
     <div className="App">
+      <h1 className='m-3'>BattleShip Online Game</h1>
       <div style={{ marginTop: 50, marginBottom: 50 }}>
       {
         gameConnectedString ? (
@@ -149,7 +150,7 @@ export default function App() {
       }
       </div>
       <ConnectionState isConnected={ isConnected } />
-      <ConnectionManager />
+      {/* <ConnectionManager /> */}
       <MyForm randomCode={randomCode} setPlayerNumber={setPlayerNumber} />
       <div style={{ marginTop: 50 }}>
         <h4>Your Player Code: { randomCode }</h4>
