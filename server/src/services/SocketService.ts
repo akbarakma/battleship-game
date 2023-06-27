@@ -12,9 +12,9 @@ export class SocketService {
   public static initialize(app: core.Express): void {
     const server = http.createServer(app);
     const io = new Server(server, {
-      cors: {
-        origin: "http://localhost:3000"
-      },
+      // cors: {
+      //   origin: "http://localhost:3000"
+      // },
       path: '/battleship-game/socket.io'
     });
 

@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 
 // "undefined" means the URL will be computed from the `window.location` object
-const URL = 'http://159.223.74.255';
+const URL = 'https://battleship-server.akbarakma.site';
 
 export const socket = io(URL, {
   autoConnect: true,
