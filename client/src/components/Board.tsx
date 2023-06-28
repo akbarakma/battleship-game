@@ -150,15 +150,21 @@ export default function Board({
               <>
                 <h1>Place Your Target on the Board</h1>
                 <div className="grid">
-                  {tempOpponentGrid.map(cell => (
-                    <div
-                      key={cell.id}
-                      className="cell"
-                      style={{ backgroundColor: cell.color }}
-                      // style={{ backgroundColor: 'white' }}
-                      onClick={() => handleClick(cell.id)}
-                    />
-                  ))}
+                  {tempOpponentGrid.map(cell => {
+                    let color = cell.color;
+                    if (cell.status === 'ship' && cell.color !== 'blue'){
+                      color = 'white';
+                    }
+                    return (
+                      <div
+                        key={cell.id}
+                        className="cell"
+                        style={{ backgroundColor: color }}
+                        // style={{ backgroundColor: 'white' }}
+                        onClick={() => handleClick(cell.id)}
+                      />
+                    )
+                  })}
                 </div>
               </>
             }
